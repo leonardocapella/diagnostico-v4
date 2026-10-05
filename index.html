@@ -152,8 +152,8 @@ h2{font-size:clamp(24px,4vw,34px);line-height:1.15;letter-spacing:-.025em;font-w
 .chips-row{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 34px}
 .chip{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--line-2);border-radius:999px;font-size:13px;color:#d4d4d4;background:rgba(23,23,23,.6)}
 .chip b{color:var(--white)}
-.mark-big{width:64px;height:64px;margin-bottom:26px;filter:drop-shadow(0 12px 30px rgba(229,9,20,.5));animation:float 4s ease-in-out infinite}
-@keyframes float{50%{transform:translateY(-6px)}}
+.mark-big{display:block;width:64px;height:64px;margin-bottom:26px}
+@keyframes float{50%{transform:translate3d(0,-6px,0)}}
 
 /* revisão */
 .review{display:grid;gap:14px;max-height:52vh;overflow:auto;padding-right:6px;margin:6px 0 4px}
@@ -237,8 +237,10 @@ h1 em::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:.08
 
 /* intro */
 .mark-wrap{position:relative;width:64px;height:64px;margin-bottom:30px}
-.mark-wrap .mark-big{margin:0;animation:markIn 1s var(--ease) both,float 4s 1s ease-in-out infinite}
-@keyframes markIn{from{opacity:0;transform:scale(.3) rotate(-25deg);filter:blur(8px)}to{opacity:1;transform:none;filter:drop-shadow(0 12px 30px rgba(229,9,20,.5))}}
+.mark-wrap{animation:markIn .9s var(--ease) both}
+.mark-wrap .mark-big{margin:0;position:relative;z-index:1;animation:float 4s 1s ease-in-out infinite}
+.mark-glow{position:absolute;inset:8px;border-radius:12px;background:var(--red);opacity:.45;filter:blur(18px);transform:translateY(10px)}
+@keyframes markIn{from{opacity:0;transform:rotate(-20deg) scale(.85)}to{opacity:1;transform:none}}
 .mark-wrap::before,.mark-wrap::after{content:"";position:absolute;inset:-4px;border-radius:14px;border:2px solid var(--red);opacity:0;animation:ring 2.6s 1s ease-out infinite}
 .mark-wrap::after{animation-delay:2.3s}
 @keyframes ring{0%{opacity:.8;transform:scale(1)}100%{opacity:0;transform:scale(1.9)}}
@@ -290,7 +292,7 @@ h1 em::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:.08
       <svg viewBox="0 0 32 32" aria-hidden="true"><use href="#v4mark"/></svg>
       <div>V4 Company<small>Diagnóstico de Marketing e Vendas</small></div>
     </div>
-    <div class="counter" id="counter"><b>01</b> / 15</div>
+    <div class="counter" id="counter"><b>01</b> / 16</div>
   </div>
   <div class="progress" id="progress"></div>
   <div class="seg-labels" id="segLabels"></div>
@@ -393,6 +395,12 @@ const QUESTIONS = [
    fields:[
      {id:"ticket", type:"money", col:"Ticket médio", required:true}
    ]},
+  {block:3, title:"Quais são suas metas mensais para os próximos 6 meses?",
+   hint:"Quanto você quer vender e faturar por mês nesse período. Pode ser aproximado.",
+   fields:[
+     {id:"meta_vendas", type:"number", col:"Meta de vendas mensal (6 meses)", label:"Meta de vendas por mês", required:true, placeholder:"0", suffix:"vendas/mês"},
+     {id:"meta_fat", type:"money", col:"Meta de faturamento mensal (6 meses)", label:"Meta de faturamento por mês", required:true}
+   ]},
   {block:3, title:"Seu negócio tem períodos de alta e baixa demanda previsíveis ao longo do ano?",
    fields:[
      {id:"saz", type:"single", col:"Tem sazonalidade", required:true, options:["Sim","Não","Não sei dizer"]},
@@ -431,7 +439,7 @@ let A = {};
 try { A = JSON.parse(localStorage.getItem(STORE_KEY) || "{}") || {}; } catch(e) { A = {}; }
 function save(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(A)); } catch(e){} }
 
-// passos: intro, contato, 15 perguntas, revisão, sucesso
+// passos: intro, contato, perguntas, revisão, sucesso
 const STEPS = ["intro","contact", ...QUESTIONS.map((_,i)=>"q"+i), "review","done"];
 let cur = 0;
 
@@ -511,10 +519,10 @@ const nextBtn = (txt="OK") => '<div class="actions"><button type="button" class=
 function stepHTML(key){
   if (key==="intro"){
     const nome = A.nome ? ", "+esc(A.nome.split(" ")[0]) : "";
-    return '<div class="mark-wrap"><svg class="mark-big" viewBox="0 0 32 32" aria-hidden="true"><use href="#v4mark"/></svg></div>'+
+    return '<div class="mark-wrap"><span class="mark-glow"></span><svg class="mark-big" viewBox="0 0 32 32" aria-hidden="true"><use href="#v4mark"/></svg></div>'+
       '<h1>Diagnóstico de <em>Marketing</em> e Vendas</h1>'+
       '<p class="lead">Olá'+nome+'! Este diagnóstico ajuda o nosso time a entender como está hoje o seu marketing digital, a sua operação comercial e a sua base de clientes. Com essas informações, chegamos à reunião com uma análise feita para a sua empresa.</p>'+
-      '<div class="chips-row"><span class="chip stagger" style="--i:0"><b data-count="15">0</b> perguntas</span><span class="chip stagger" style="--i:1"><b data-count="5">0</b> blocos</span><span class="chip stagger" style="--i:2">cerca de <b data-count="6">0</b><b>minutos</b></span></div>'+
+      '<div class="chips-row"><span class="chip stagger" style="--i:0"><b data-count="'+QUESTIONS.length+'">0</b> perguntas</span><span class="chip stagger" style="--i:1"><b data-count="5">0</b> blocos</span><span class="chip stagger" style="--i:2">cerca de <b data-count="6">0</b><b>minutos</b></span></div>'+
       '<div class="marquee" aria-hidden="true"><div class="marquee-track">'+[0,1].map(()=>'<span>'+BLOCKS.join('</span><span>')+'</span>').join('')+'</div></div>'+
       '<div class="actions"><button type="button" class="btn lg" data-next>'+(Object.keys(A).length?"Continuar de onde parei":"Começar diagnóstico")+' <svg><use href="#ic-arrow"/></svg></button><span class="enter-hint">pressione <kbd>Enter ↵</kbd></span></div>';
   }
