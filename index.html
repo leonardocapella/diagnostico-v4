@@ -292,7 +292,7 @@ h1 em::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:.08
       <svg viewBox="0 0 32 32" aria-hidden="true"><use href="#v4mark"/></svg>
       <div>V4 Company<small>Diagnóstico de Marketing e Vendas</small></div>
     </div>
-    <div class="counter" id="counter"><b>01</b> / 16</div>
+    <div class="counter" id="counter"><b>01</b> / 17</div>
   </div>
   <div class="progress" id="progress"></div>
   <div class="seg-labels" id="segLabels"></div>
@@ -401,6 +401,11 @@ const QUESTIONS = [
      {id:"meta_vendas", type:"number", col:"Meta de vendas mensal (6 meses)", label:"Meta de vendas por mês", required:true, placeholder:"0", suffix:"vendas/mês"},
      {id:"meta_fat", type:"money", col:"Meta de faturamento mensal (6 meses)", label:"Meta de faturamento por mês", required:true}
    ]},
+  {block:3, title:"Quais desafios você encontra hoje para chegar nessas metas?",
+   hint:"Fique à vontade para escrever o que vier: marketing, vendas, equipe, processos, concorrência, o que estiver travando.",
+   fields:[
+     {id:"desafios", type:"textarea", col:"Desafios atuais", required:true, rows:4, placeholder:"Ex: os leads chegam, mas não convertem; o time não dá conta do volume; dependemos de indicação"}
+   ]},
   {block:3, title:"Seu negócio tem períodos de alta e baixa demanda previsíveis ao longo do ano?",
    fields:[
      {id:"saz", type:"single", col:"Tem sazonalidade", required:true, options:["Sim","Não","Não sei dizer"]},
@@ -494,7 +499,7 @@ function fieldHTML(f){
     return '<div class="field" data-wrap="'+f.id+'">'+lab+inner+'</div>';
   }
   if (f.type==="textarea"){
-    inner = '<textarea class="textarea" id="f_'+f.id+'" data-in="'+f.id+'" rows="2" placeholder="'+esc(f.placeholder||"")+'">'+esc(val)+'</textarea>';
+    inner = '<textarea class="textarea" id="f_'+f.id+'" data-in="'+f.id+'" rows="'+(f.rows||2)+'" placeholder="'+esc(f.placeholder||"")+'">'+esc(val)+'</textarea>';
   } else if (f.type==="money"){
     inner = '<div class="with-prefix"><span>R$</span><input class="input" id="f_'+f.id+'" data-in="'+f.id+'" data-money="1" inputmode="numeric" placeholder="0,00" value="'+esc(val)+'"></div>';
   } else if (f.type==="number"){
