@@ -41,10 +41,10 @@ header{position:fixed;top:0;left:0;right:0;z-index:10;padding:calc(env(safe-area
 .brand small{display:block;font-weight:500;color:var(--mute);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
 .counter{font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums;white-space:nowrap}
 .counter b{color:var(--white)}
-.progress{max-width:880px;margin:14px auto 0;display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.progress{max-width:880px;margin:14px auto 0;display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
 .seg{height:4px;border-radius:4px;background:var(--line);overflow:hidden;position:relative}
 .seg i{position:absolute;inset:0;background:var(--red);transform-origin:left;transform:scaleX(0);transition:transform .6s var(--ease)}
-.seg-labels{max-width:880px;margin:6px auto 0;display:grid;grid-template-columns:repeat(5,1fr);gap:6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute-2)}
+.seg-labels{max-width:880px;margin:6px auto 0;display:grid;grid-template-columns:repeat(6,1fr);gap:6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute-2)}
 .seg-labels span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .3s}
 .seg-labels span.on{color:var(--white)}
 header.hide-progress .progress,header.hide-progress .seg-labels,header.hide-progress .counter{visibility:hidden}
@@ -114,6 +114,7 @@ h2{font-size:clamp(24px,4vw,34px);line-height:1.15;letter-spacing:-.025em;font-w
 .scale button{width:44px;height:44px;border-radius:8px;border:1.5px solid var(--line-2);background:var(--ink);font-weight:700;cursor:pointer;transition:all .2s}
 .scale button:hover{border-color:#5a5a5a}
 .scale button[aria-pressed="true"]{background:var(--red);border-color:var(--red);transform:translateY(-2px);box-shadow:0 8px 20px -8px rgba(229,9,20,.8)}
+.scale.s10 button{width:40px}
 .scale-legend{display:flex;justify-content:flex-end;gap:14px;font-size:12px;color:var(--mute-2);margin-top:8px}
 
 .reveal{overflow:hidden;transition:max-height .45s var(--ease),opacity .3s;max-height:0;opacity:0}
@@ -121,7 +122,7 @@ h2{font-size:clamp(24px,4vw,34px);line-height:1.15;letter-spacing:-.025em;font-w
 
 /* ações */
 .actions{display:flex;align-items:center;gap:16px;margin-top:34px;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:10px;padding:15px 26px;border-radius:10px;border:0;background:var(--red);color:var(--white);font-weight:700;font-size:16px;cursor:pointer;position:relative;overflow:hidden;transition:transform .15s,box-shadow .25s,background .2s;box-shadow:0 10px 30px -12px rgba(229,9,20,.9)}
+.btn{display:inline-flex;align-items:center;gap:10px;text-decoration:none;padding:15px 26px;border-radius:10px;border:0;background:var(--red);color:var(--white);font-weight:700;font-size:16px;cursor:pointer;position:relative;overflow:hidden;transition:transform .15s,box-shadow .25s,background .2s;box-shadow:0 10px 30px -12px rgba(229,9,20,.9)}
 .btn:hover{background:var(--red-600);transform:translateY(-1px);box-shadow:0 14px 34px -12px rgba(229,9,20,1)}
 .btn:active{transform:translateY(1px)}
 .btn svg{width:18px;height:18px;transition:transform .25s var(--ease)}
@@ -168,6 +169,9 @@ h2{font-size:clamp(24px,4vw,34px);line-height:1.15;letter-spacing:-.025em;font-w
 
 /* sucesso */
 .success{text-align:left}
+.agenda{margin-top:40px;padding-top:30px;border-top:1px solid var(--line)}
+.agenda h3{margin:0 0 6px;font-size:22px;font-weight:800;letter-spacing:-.02em}
+.agenda-frame{width:100%;height:640px;border:1px solid var(--line-2);border-radius:12px;background:#fff;display:block;margin:4px 0 14px}
 .check{width:84px;height:84px;margin-bottom:26px}
 .check circle{stroke:var(--red);stroke-width:3;fill:none;stroke-dasharray:252;stroke-dashoffset:252;animation:draw .8s var(--ease) forwards}
 .check path{stroke:var(--white);stroke-width:4;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60;stroke-dashoffset:60;animation:draw .5s .6s var(--ease) forwards}
@@ -271,7 +275,9 @@ h1 em::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:.08
   .grid-2{grid-template-columns:1fr}
   .scale-row{grid-template-columns:1fr}
   .scale{justify-content:space-between}
-  .scale button{flex:1;width:auto}
+  .scale button,.scale.s10 button{flex:1;width:auto;min-width:0}
+  .scale.s10{gap:4px}
+  .agenda-frame{height:560px}
   .input{font-size:20px}
   .rv-item{grid-template-columns:1fr}
   .brand small{display:none}
@@ -322,11 +328,14 @@ const CONFIG = {
   // WhatsApp que recebe as respostas (DDI + DDD + número, só dígitos)
   whatsapp: "5551991201423",
   // URL do App da Web do Google Apps Script (planilha). Cole aqui depois de implantar.
-  sheetsEndpoint: "https://script.google.com/macros/s/AKfycbxDdHmtsVmKbhsdHHYAZInYeTNcU5Cwd2frWdKAf_QQECoEmUneeoPCpxk1FeQ1Ckcwhw/exec"
+  sheetsEndpoint: "https://script.google.com/macros/s/AKfycbxDdHmtsVmKbhsdHHYAZInYeTNcU5Cwd2frWdKAf_QQECoEmUneeoPCpxk1FeQ1Ckcwhw/exec",
+  // Link da página de agendamento (Google Agenda > Agendamento de horários, ou Calendly).
+  // Enquanto estiver vazio, a parte da agenda não aparece no final.
+  agenda: ""
 };
 /* ======================================================== */
 
-const BLOCKS = ["Estrutura Digital","Gestão do Marketing","Mídia Paga","Estrutura Comercial","Base de Clientes"];
+const BLOCKS = ["Estrutura Digital","Gestão do Marketing","Mídia Paga","Estrutura Comercial","Base de Clientes","Investimento"];
 
 /* Cada campo tem um "col": é o nome da coluna na planilha e o rótulo na mensagem do WhatsApp */
 const QUESTIONS = [
@@ -426,6 +435,21 @@ const QUESTIONS = [
      {id:"acoes", type:"multi", col:"Ações na base", required:true, cols:true,
       options:["E-mail marketing","Disparos no WhatsApp","Programa de indicação","Programa de fidelidade","Ofertas de upsell / cross-sell","Pós-venda ativo","Remarketing para a base","Nenhuma ação estruturada"], exclusive:"Nenhuma ação estruturada"},
      {id:"acoes_obs", type:"textarea", col:"Ações na base - Detalhes", label:"Detalhes", optional:true, placeholder:"Ex: cupom de retorno após 60 dias"}
+   ]},
+  {block:5, title:"De 1 a 10, qual o nível de prioridade para resolver os problemas de marketing da sua empresa?",
+   fields:[
+     {id:"prioridade", type:"scale", max:10, col:"Prioridade (1 a 10)", label:"Prioridade", sub:"Quanto isso é urgente hoje", required:true, legend:["1 = pode esperar","10 = urgente"]}
+   ]},
+  {block:5, title:"Em quanto tempo você pretende fazer esse investimento?",
+   fields:[
+     {id:"prazo", type:"single", col:"Prazo para investir", required:true,
+      options:["Em até 30 dias","Em até 60 dias","Em até 90 dias","Ainda sem previsão"]}
+   ]},
+  {block:5, title:"Você tem verba ou caixa disponível para investir mensalmente? Quanto?",
+   hint:"Escolha a faixa mais próxima do valor que você consegue investir por mês.",
+   fields:[
+     {id:"verba", type:"single", col:"Verba mensal disponível", required:true,
+      options:["R$ 6 mil a R$ 10 mil","R$ 14 mil a R$ 18 mil","R$ 20 mil a R$ 25 mil","Ainda não tenho verba definida"]}
    ]}
 ];
 
@@ -486,8 +510,9 @@ function fieldHTML(f){
   const val = A[f.id] ?? "";
   let inner = "";
   if (f.type==="scale"){
-    return '<div class="scale-row"><div class="name">'+esc(f.label)+'<small>'+esc(f.sub||"")+'</small></div><div class="scale" role="group" aria-label="'+esc(f.label)+'">'+
-      [1,2,3,4,5].map(n=>'<button type="button" data-scale="'+f.id+'" data-v="'+n+'" aria-pressed="'+(val==n)+'">'+n+'</button>').join("")+'</div></div>';
+    const max = f.max||5;
+    return '<div class="scale-row"><div class="name">'+esc(f.label)+'<small>'+esc(f.sub||"")+'</small></div><div class="scale'+(max>5?' s10':'')+'" role="group" aria-label="'+esc(f.label)+'">'+
+      Array.from({length:max},(_,i)=>i+1).map(n=>'<button type="button" data-scale="'+f.id+'" data-v="'+n+'" aria-pressed="'+(val==n)+'">'+n+'</button>').join("")+'</div></div>';
   }
   if (f.type==="single" || f.type==="multi"){
     const sel = f.type==="multi" ? (Array.isArray(val)?val:[]) : val;
@@ -512,7 +537,7 @@ function fieldHTML(f){
 function fieldsHTML(fields){
   const scales = fields.filter(f=>f.type==="scale");
   let html = "";
-  if (scales.length) html += '<div>'+scales.map(fieldHTML).join("")+'<div class="scale-legend"><span>1 = muito fraco</span><span>5 = excelente</span></div></div>';
+  if (scales.length) html += '<div>'+scales.map(fieldHTML).join("")+'<div class="scale-legend">'+(scales[0].legend||["1 = muito fraco","5 = excelente"]).map(t=>'<span>'+esc(t)+'</span>').join("")+'</div></div>';
   fields.filter(f=>f.type!=="scale").forEach(f=>{
     html += f.showIf ? '<div class="reveal'+(visible(f)?' open':'')+'" data-reveal="'+f.id+'">'+fieldHTML(f)+'</div>' : fieldHTML(f);
   });
@@ -527,7 +552,7 @@ function stepHTML(key){
     return '<div class="mark-wrap"><span class="mark-glow"></span><svg class="mark-big" viewBox="0 0 32 32" aria-hidden="true"><use href="#v4mark"/></svg></div>'+
       '<h1>Diagnóstico de <em>Marketing</em> e Vendas</h1>'+
       '<p class="lead">Olá'+nome+'! Este diagnóstico ajuda o nosso time a entender como está hoje o seu marketing digital, a sua operação comercial e a sua base de clientes. Com essas informações, chegamos à reunião com uma análise feita para a sua empresa.</p>'+
-      '<div class="chips-row"><span class="chip stagger" style="--i:0"><b data-count="'+QUESTIONS.length+'">0</b> perguntas</span><span class="chip stagger" style="--i:1"><b data-count="5">0</b> blocos</span><span class="chip stagger" style="--i:2">cerca de <b data-count="6">0</b><b>minutos</b></span></div>'+
+      '<div class="chips-row"><span class="chip stagger" style="--i:0"><b data-count="'+QUESTIONS.length+'">0</b> perguntas</span><span class="chip stagger" style="--i:1"><b data-count="'+BLOCKS.length+'">0</b> blocos</span><span class="chip stagger" style="--i:2">cerca de <b data-count="7">0</b><b>minutos</b></span></div>'+
       '<div class="marquee" aria-hidden="true"><div class="marquee-track">'+[0,1].map(()=>'<span>'+BLOCKS.join('</span><span>')+'</span>').join('')+'</div></div>'+
       '<div class="actions"><button type="button" class="btn lg" data-next>'+(Object.keys(A).length?"Continuar de onde parei":"Começar diagnóstico")+' <svg><use href="#ic-arrow"/></svg></button><span class="enter-hint">pressione <kbd>Enter ↵</kbd></span></div>';
   }
@@ -544,12 +569,22 @@ function stepHTML(key){
     return '<div class="success"><svg class="check" viewBox="0 0 84 84" aria-hidden="true"><circle cx="42" cy="42" r="40"/><path d="M26 43l11 11 21-23"/></svg>'+
       '<h2>Diagnóstico enviado!</h2><p class="hint">Obrigado'+(A.nome?", "+esc(A.nome.split(" ")[0]):"")+'. Se o WhatsApp não abriu sozinho, toque no botão abaixo e envie a mensagem com o resumo das respostas.</p>'+
       '<div class="status" id="status"></div>'+
-      '<div class="actions"><a class="btn lg" id="waBtn" target="_blank" rel="noopener">Enviar pelo WhatsApp <svg><use href="#ic-arrow"/></svg></a><button type="button" class="btn ghost" id="copyBtn">Copiar respostas</button></div><div class="error" aria-live="polite"></div></div>';
+      '<div class="actions"><a class="btn lg" id="waBtn" target="_blank" rel="noopener">Enviar pelo WhatsApp <svg><use href="#ic-arrow"/></svg></a><button type="button" class="btn ghost" id="copyBtn">Copiar respostas</button></div><div class="error" aria-live="polite"></div>'+agendaHTML()+'</div>';
   }
   const qi = +key.slice(1), q = QUESTIONS[qi];
   return '<div class="eyebrow"><span class="num">'+String(qi+1).padStart(2,"0")+'</span>'+BLOCKS[q.block]+'</div>'+
     '<h2>'+esc(q.title)+'</h2>'+(q.hint?'<p class="hint">'+esc(q.hint)+'</p>':'<p class="hint"></p>')+
     '<div>'+fieldsHTML(q.fields)+'</div>'+nextBtn(qi===QUESTIONS.length-1?"Revisar respostas":"OK");
+}
+
+function agendaHTML(){
+  if (!CONFIG.agenda) return "";
+  let src = CONFIG.agenda;
+  // a página de agendamento do Google Agenda precisa de gv=true para abrir embutida
+  if (/calendar\.google\.com\/calendar\/appointments/.test(src) && !/[?&]gv=true/.test(src)) src += (src.includes("?")?"&":"?")+"gv=true";
+  return '<div class="agenda"><div class="eyebrow">Próximo passo</div><h3>Agende a reunião de diagnóstico</h3><p class="hint">Escolha o melhor dia e horário para conversarmos sobre as suas respostas.</p>'+
+    '<iframe class="agenda-frame" src="'+esc(src)+'" title="Agenda" loading="lazy"></iframe>'+
+    '<a class="btn ghost" href="'+esc(CONFIG.agenda)+'" target="_blank" rel="noopener">Abrir agenda em nova aba</a></div>';
 }
 
 /* ===================== navegação ===================== */
@@ -677,7 +712,7 @@ function fmt(f){
   const v = A[f.id];
   if (isEmpty(v)) return "";
   if (Array.isArray(v)) return v.join(", ");
-  if (f.type==="scale") return v+"/5";
+  if (f.type==="scale") return v+"/"+(f.max||5);
   if (f.type==="money") return "R$ "+v;
   return String(v);
 }
