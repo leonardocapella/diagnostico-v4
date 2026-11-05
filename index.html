@@ -330,6 +330,11 @@ const CONFIG = {
   whatsapp: "5551991201423",
   // URL do App da Web do Google Apps Script (planilha). Cole aqui depois de implantar.
   sheetsEndpoint: "https://script.google.com/macros/s/AKfycbxDdHmtsVmKbhsdHHYAZInYeTNcU5Cwd2frWdKAf_QQECoEmUneeoPCpxk1FeQ1Ckcwhw/exec",
+  // Hub V4 (Supabase): as respostas também entram na aba Diagnósticos, para o time qualificar.
+  // A publishable key é pública por natureza; a política de RLS só deixa o anônimo GRAVAR, nunca ler.
+  hub: { url: "https://ovcsinjbglvskcxghybh.supabase.co", key: "sb_publishable_hwuM5aWSvsQS-EDxrqpqHQ_M-_jHZH0" },
+  // Endereço público deste formulário (usado nos links com ?origem= gerados no Hub)
+  endereco: "https://leonardocapella.github.io/diagnostico-v4/",
   // Reunião marcada no formulário: duração e horários oferecidos (dias úteis a partir de amanhã)
   reuniao: { duracaoMin: 45, dias: 10, horarios: ["09:00","10:00","11:00","14:00","15:00","16:00","17:00"] }
 };
@@ -802,7 +807,7 @@ async function send(btn){
   // abre o WhatsApp dentro do clique (evita bloqueio de pop-up)
   const w = window.open(waLink(), "_blank");
   window.__waOpened = !!w;
-  await postSheet();
+  await Promise.all([postSheet(), postHub()]);
   go(STEPS.indexOf("done"), 1);
 }
 async function postSheet(){
@@ -813,19 +818,49 @@ async function postSheet(){
     sheetStatus = "ok";
   }catch(e){ sheetStatus = "err"; }
 }
+// Grava no Hub (Supabase). Falha aqui não atrapalha a planilha nem o WhatsApp.
+let hubStatus = "idle";
+async function postHub(){
+  const { url, key } = CONFIG.hub || {};
+  if (!url || !key){ hubStatus = "off"; return; }
+  hubStatus = "wait";
+  try{
+    const p = payload();
+    // contato vai em coluna própria; o resto do questionário fica no jsonb "respostas"
+    const contato = { Nome:"nome", Empresa:"empresa", Cargo:"cargo", WhatsApp:"whatsapp", "E-mail":"email", "Site / Instagram":"site" };
+    const linha = { respostas: {} };
+    Object.entries(p).forEach(([col, val])=>{
+      if (col === "Data/Hora" || col === "__reuniao") return;
+      if (contato[col]) linha[contato[col]] = val || null;
+      else if (String(val ?? "").trim() !== "") linha.respostas[col] = val;
+    });
+    linha.reuniao = p.__reuniao ? p.__reuniao.inicio : null;
+    // de onde veio o lead: ?origem= do link compartilhado (só letras, números, hífen e ponto)
+    try {
+      const o = new URLSearchParams(location.search).get("origem");
+      if (o) linha.origem = o.replace(/[^\w.-]/g, "").slice(0, 60) || null;
+    } catch (e) {}
+    const r = await fetch(url.replace(/\/$/, "") + "/rest/v1/hub_diagnosticos", {
+      method: "POST",
+      headers: { apikey: key, Authorization: "Bearer " + key, "Content-Type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify(linha)
+    });
+    hubStatus = r.ok ? "ok" : "err";
+  }catch(e){ hubStatus = "err"; }
+}
 function afterDone(){
   setTimeout(()=>{
     const st = $("#status");
     if (st){
       const rows = [];
-      if (sheetStatus==="ok") rows.push('<div><span class="dot ok"></span>Respostas registradas</div>');
+      if (sheetStatus==="ok" || hubStatus==="ok") rows.push('<div><span class="dot ok"></span>Respostas registradas</div>');
       if (A.reuniao_dia && A.reuniao_hora) rows.push('<div><span class="dot ok"></span>Reunião marcada para '+esc(diaTxt(A.reuniao_dia,true))+' às '+esc(A.reuniao_hora)+(A.email?'. O convite chega em '+esc(A.email):'')+'</div>');
-      if (sheetStatus==="err") rows.push('<div><span class="dot err"></span>Não conseguimos registrar agora. Envie pelo WhatsApp abaixo.</div>');
+      if (sheetStatus!=="ok" && hubStatus!=="ok" && (sheetStatus==="err" || hubStatus==="err")) rows.push('<div><span class="dot err"></span>Não conseguimos registrar agora. Envie pelo WhatsApp abaixo.</div>');
       rows.push('<div><span class="dot '+(window.__waOpened?"ok":"wait")+'"></span>'+(window.__waOpened?"WhatsApp aberto com o resumo":"Toque em “Enviar pelo WhatsApp” para concluir")+'</div>');
       st.innerHTML = rows.join("");
     }
     const wa = $("#waBtn"); if (wa) wa.href = waLink();
-    if (sheetStatus==="ok"){ try{ localStorage.removeItem(STORE_KEY); }catch(e){} }
+    if (sheetStatus==="ok" || hubStatus==="ok"){ try{ localStorage.removeItem(STORE_KEY); }catch(e){} }
     confetti();
   }, 30);
 }
